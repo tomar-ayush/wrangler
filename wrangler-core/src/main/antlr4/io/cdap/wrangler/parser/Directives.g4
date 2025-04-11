@@ -140,7 +140,7 @@ numberRange
  ;
 
 value
- : String | Number | Column | Bool | BYTE_SIZE | TIME_DURATION;
+ : String | Number | Column | Bool | BYTE_SIZE | TIME_DURATION
  ;
 
 ecommand
@@ -281,11 +281,9 @@ EscapeSequence
    ;
 
 BYTE_SIZE 
-    : (FLOAT | INT) BYTE_UNIT; 
+    : (FLOAT | Int) BYTE_UNIT; 
 
- /* [INT]+ ('.'[INT]+)? */ 
-
-TIME_DURATION: (FLOAT | INT) TIME_UNIT;
+TIME_DURATION: (FLOAT | Int) TIME_UNIT;
 
 fragment BYTE_UNIT 
   : ('K' | 'k') ('B' | 'b')?
