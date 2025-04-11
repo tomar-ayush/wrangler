@@ -288,10 +288,10 @@ BYTE_SIZE
 TIME_DURATION: (FLOAT | INT) TIME_UNIT;
 
 fragment BYTE_UNIT 
-  : ('K' | 'k') ('B' | 'b' | 'i' | 'I')?
-  | ('M' | 'm') ('B' | 'b' | 'i' | 'I')? 
-  | ('G' | 'g') ('B' | 'b' | 'i' | 'I')? 
-  | ('T' | 't') ('B' | 'b' | 'i' | 'I')?   
+  : ('K' | 'k') ('B' | 'b')?
+  | ('M' | 'm') ('B' | 'b')? 
+  | ('G' | 'g') ('B' | 'b')? 
+  | ('T' | 't') ('B' | 'b')?   
 ;
 
 fragment TIME_UNIT: 'ms' | 's' | 'sec' | 'secs' | 'm' | 'min' | 'h' | 'hr' | 'hour' | 'hours';
