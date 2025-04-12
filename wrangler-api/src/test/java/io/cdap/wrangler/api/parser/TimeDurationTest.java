@@ -1,5 +1,5 @@
 /*
- * Copyright © 2025 Cask Data, Inc.
+ * Copyright © 2017-2019 Cask Data, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not
  * use this file except in compliance with the License. You may obtain a copy of
@@ -12,10 +12,8 @@
  * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
  * License for the specific language governing permissions and limitations under
  * the License.
- *
- * @author tomar-ayush
- * Created on: 2025-04-11 14:46:08
  */
+
 package io.cdap.wrangler.api.parser;
 
 import org.junit.Assert;
