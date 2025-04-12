@@ -331,6 +331,12 @@ public final class RecipeVisitor extends DirectivesBaseVisitor<RecipeSymbol.Buil
     return new SourceInfo(lineno, column, text);
   }
   
+  /**
+   * Visits a value node in the parse tree and extracts the corresponding token.
+   *
+   * @param ctx The context of the value node in the parse tree.
+   * @return The updated RecipeSymbol.Builder after processing the value node.
+   */
   @Override
   public RecipeSymbol.Builder visitValue(DirectivesParser.ValueContext ctx) {
     if (ctx.BYTE_SIZE() != null) {

@@ -47,6 +47,11 @@ public class AggregateStats implements Directive {
     private double totalTimeMs = 0.0;
     private int count = 0;
 
+    /**
+     * Defines the usage of the directive, specifying the required arguments.
+     *
+     * @return UsageDefinition object containing the directive's argument definitions.
+     */
     @Override
     public UsageDefinition define() {
         UsageDefinition.Builder builder = UsageDefinition.builder(NAME);
@@ -57,6 +62,12 @@ public class AggregateStats implements Directive {
         return builder.build();
     }
 
+    /**
+     * Initializes the directive with the provided arguments.
+     *
+     * @param args Arguments object containing the directive's parameters.
+     * @throws DirectiveParseException if there is an error parsing the arguments.
+     */
     @Override
     public void initialize(Arguments args) throws DirectiveParseException {
         byteCol = ((ColumnName) args.value("byteCol")).value();
@@ -65,6 +76,14 @@ public class AggregateStats implements Directive {
         outputTimeCol = ((Text) args.value("outputTimeCol")).value();
     }
 
+    /**
+     * Executes the directive on a list of rows, aggregating statistics based on the specified columns.
+     *
+     * @param rows List of Row objects to process.
+     * @param ctx ExecutorContext providing execution context information.
+     * @return List of Row objects containing the aggregated results.
+     * @throws DirectiveExecutionException if there is an error during execution.
+     */
     @Override
     public List<Row> execute(List<Row> rows, ExecutorContext ctx) throws DirectiveExecutionException {
         try {
@@ -104,7 +123,12 @@ public class AggregateStats implements Directive {
         }
     }
 
-    // @Override
+    /**
+     * Provides the output schema for the directive based on the input schema.
+     *
+     * @param inputSchema Schema object representing the input schema.
+     * @return Schema object representing the output schema.
+     */
     public Schema getOutputSchema(Schema inputSchema) {
         List<Schema.Field> fields = new ArrayList<>();
         fields.add(Schema.Field.of(outputSizeCol, Schema.of(Schema.Type.DOUBLE)));
@@ -112,6 +136,9 @@ public class AggregateStats implements Directive {
         return Schema.recordOf("aggregate-stats", fields);
     }
 
+    /**
+     * Cleans up resources and resets the directive's state.
+     */
     @Override
     public void destroy() {
       // Reset all accumulated values
