@@ -1,10 +1,29 @@
-package io.cdap.wrangler.api.parser;
+/*
+ * Copyright © 2017-2019 Cask Data, Inc.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License"); you may not
+ * use this file except in compliance with the License. You may obtain a copy of
+ * the License at
+ *
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
+ * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
+ * License for the specific language governing permissions and limitations under
+ * the License.
+ */
 
-import java.util.Locale;
+package io.cdap.wrangler.api.parser;
 
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 
+import java.util.Locale;
+
+/**
+ * Represents a token for time duration values with units (e.g., ms, s, m, h).
+ */
 public class TimeDuration implements Token {
 
     private Double time;
@@ -35,7 +54,7 @@ public class TimeDuration implements Token {
      * @return time value in double.
      */
     public double getTime() {
-        return (double) this.time;
+        return this.time;
     }
 
     /**
@@ -52,27 +71,39 @@ public class TimeDuration implements Token {
     /**
      * Parses the input string and converts it to milliseconds.
      *
-     * @param input The input time value string.
+     * @param value The input time duration string.
      * @return The time in milliseconds.
-     * @throws IllegalArgumentException if input is not a valid time unit
+     * @throws IllegalArgumentException if input is not a valid time duration
      * string.
      */
     private Double parseMilliSeconds(String value) {
         String normalize = value.trim().toLowerCase(Locale.ENGLISH);
-        double value_double = Double.parseDouble(normalize.replaceAll("[^0-9.]", ""));
+        double valueDouble = Double.parseDouble(normalize.replaceAll("[^0-9.\\-]", ""));
+        String unit = normalize.replaceAll("[^a-zA-Z]+", "");
+        if (valueDouble < 0) {
+            throw new IllegalArgumentException("Negative time values are not allowed: " + value);
+        }
 
-        if (normalize.endsWith("ms")) {
-            return (double) (value_double);
-        } else if (normalize.endsWith("s") || normalize.endsWith("sec") || normalize.endsWith("secs")) {
-            return (double) (value_double * 1000);
-        } else if (normalize.endsWith("m") || normalize.endsWith("min") || normalize.endsWith("mins")) {
-            return (double) (value_double * 60 * 1000);
-        } else if (normalize.endsWith("h") || normalize.endsWith("hr") || normalize.endsWith("hour") || normalize.endsWith("hours")) {
-            return (double) (value_double * 60 * 60 * 1000);
+        if (unit.equals("ms")) {
+            return valueDouble;
+        } else if (unit.equals("s") 
+                || unit.equals("sec") 
+                || unit.equals("secs")) {
+            return valueDouble * 1000;
+        } else if (unit.equals("m") || unit.equals("min")) {
+            return valueDouble * 1000 * 60;
+        } else if (unit.equals("hours") || normalize.contains("hours")) { // Adjusted condition
+            System.out.println(valueDouble + " valueDouble");
+            return valueDouble * 1000 * 60 * 60;
+        } else if (unit.equals("hour")) {
+            return valueDouble * 1000 * 60 * 60;
+        } else if (unit.equals("hr")) {
+            return valueDouble * 1000 * 60 * 60;
+        } else if (unit.equals("h")) {
+            return valueDouble * 1000 * 60 * 60;
         } else {
             throw new IllegalArgumentException("Unsupported time unit in: " + value);
         }
-
     }
 
     /**
@@ -84,7 +115,6 @@ public class TimeDuration implements Token {
      */
     @Override
     public JsonElement toJson() {
-
         JsonObject object = new JsonObject();
         object.addProperty("type", TokenType.TIME_DURATION.name());
         object.addProperty("value", this.time);

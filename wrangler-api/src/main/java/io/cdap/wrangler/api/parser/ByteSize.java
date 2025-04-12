@@ -1,10 +1,29 @@
-package io.cdap.wrangler.api.parser;
+/*
+ * Copyright © 2017-2019 Cask Data, Inc.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License"); you may not
+ * use this file except in compliance with the License. You may obtain a copy of
+ * the License at
+ *
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
+ * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
+ * License for the specific language governing permissions and limitations under
+ * the License.
+ */
 
-import java.util.Locale;
+package io.cdap.wrangler.api.parser;
 
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 
+import java.util.Locale;
+
+/**
+ * Represents a token for byte size values with units (e.g., KB, MB, GB).
+ */
 public class ByteSize implements Token {
 
     private Double bytes;
@@ -35,7 +54,7 @@ public class ByteSize implements Token {
      * @return Byte size in long.
      */
     public double getBytes() {
-        return (double) this.bytes;
+        return this.bytes;
     }
 
     /**
@@ -52,29 +71,36 @@ public class ByteSize implements Token {
     /**
      * Parses the input string and converts it to bytes.
      *
-     * @param input The input byte size string.
+     * @param value The input byte size string.
      * @return The size in bytes.
      * @throws IllegalArgumentException if input is not a valid byte size
      * string.
      */
     private Double parseBytes(String value) {
         String normalize = value.trim().toLowerCase(Locale.ENGLISH);
-        double value_double = Double.parseDouble(normalize.replaceAll("[^0-9.]", ""));
+        double valueDouble = Double.parseDouble(normalize.replaceAll("[^0-9.-]", ""));
+        String unit = normalize.replaceAll("[^a-zA-Z]+", "");
+        System.out.println(unit);
 
-        if (normalize.endsWith("bytes")) {
-            return (double) (value_double);
-        } else if (normalize.endsWith("kb")) {
-            return (double) (value_double * 1024);
-        } else if (normalize.endsWith("mb")) {
-            return (double) (value_double * 1024 * 1024);
-        } else if (normalize.endsWith("gb")) {
-            return (double) (value_double * 1024 * 1024 * 1024);
-        } else if (normalize.endsWith("tb")) {
-            return (double) (value_double * 1024 * 1024 * 1024 * 1024);
+        if (valueDouble < 0) {
+            throw new IllegalArgumentException("Negative byte size values are not allowed: " + value);
+        }
+
+        if (unit.equals("bytes")) {
+            return valueDouble;
+        } else if (unit.equals("b")) {
+            return valueDouble;
+        } else if (unit.equals("kb")) {
+            return valueDouble * 1024;
+        } else if (unit.equals("mb")) {
+            return valueDouble * 1024 * 1024;
+        } else if (unit.equals("gb")) {
+            return valueDouble * 1024 * 1024 * 1024;
+        } else if (unit.equals("tb")) {
+            return valueDouble * 1024 * 1024 * 1024 * 1024;
         } else {
             throw new IllegalArgumentException("Unsupported byte unit in: " + value);
         }
-
     }
 
     /**
@@ -86,7 +112,6 @@ public class ByteSize implements Token {
      */
     @Override
     public JsonElement toJson() {
-
         JsonObject object = new JsonObject();
         object.addProperty("type", TokenType.BYTE_SIZE.name());
         object.addProperty("value", this.bytes);
